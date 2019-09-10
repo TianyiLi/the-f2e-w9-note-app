@@ -1,5 +1,11 @@
 # the-f2e-w9-note-app
 
+終於最後一週啦...
+
+[設計稿](https://challenge.thef2e.com/user/1600?schedule=4259#works-4259)
+
+[預覽網址](https://tianyili.github.io/the-f2e-w9-note-app)
+
 ## Project setup
 ```
 yarn install
