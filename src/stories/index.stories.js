@@ -15,7 +15,42 @@ storiesOf('Note', module)
   }))
   .add('note card', () => ({
     components: { NoteCard },
-    template: '<note-card :star="true" title="test" cover="first"></note-card>'
+    template: /* html */`
+      <div :style="darkMode ? 'background-color:#22222D' : ''" style="width: 100%; display: flex; justify-content: space-evenly; padding: 20px; box-sizing: border-box; flex-wrap: wrap">
+        <note-card mode="grid"></note-card>
+        <note-card :star="true" title="test" cover="first" mode="grid"></note-card>
+        <note-card :star="false" title="test" cover="second" mode="grid"></note-card>
+        <br/>
+        <note-card mode="row"></note-card>
+        <note-card :star="true" title="test" mode="row"></note-card>
+        <note-card :star="false" title="test" mode="row"></note-card>
+        <button @click="modeChange">mode toggle</button>
+      </div>
+    `,
+    provide () {
+      const state = new Proxy({}, {
+        get: (target, attr) => {
+          if (this[attr]) {
+            return this[attr]
+          } else {
+            return null
+          }
+        }
+      })
+      return {
+        state
+      }
+    },
+    data () {
+      return {
+        darkMode: false
+      }
+    },
+    methods: {
+      modeChange () {
+        this.darkMode = !this.darkMode
+      }
+    }
   }))
   // .add('with JSX', () => ({
   //   components: { MyButton },
