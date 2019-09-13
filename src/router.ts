@@ -11,7 +11,6 @@ export default new Router({
       name: 'home',
       component: Home
     },
-
     {
       path: '/note/?:id',
       name: 'note',

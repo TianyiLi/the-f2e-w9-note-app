@@ -1,11 +1,18 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import { INote } from './interface/INote'
 
 Vue.use(Vuex)
 
+const note: INote[] = []
+
 export default new Vuex.Store({
   state: {
-    darkMode: false
+    darkMode: false,
+    note
+  },
+  getters: {
+    noteList: state => state.note.map(({ coverClass, title, id, star }) => ({ id, name: title, star, cover: coverClass }))
   },
   mutations: {
     modeToggle (state, value: boolean) {
@@ -17,6 +24,8 @@ export default new Vuex.Store({
     }
   },
   actions: {
-
+    setNote ({ state }, value: INote) {
+      state.note.push(value)
+    }
   }
 })

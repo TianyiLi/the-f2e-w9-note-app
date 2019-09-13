@@ -3,13 +3,6 @@ import App from './App.vue'
 import router from './router'
 import store from './store'
 
-import 'quill/dist/quill.core.css'
-import 'quill/dist/quill.snow.css'
-import 'quill/dist/quill.bubble.css'
-import VueQuillEditor from 'vue-quill-editor'
-
-Vue.use(VueQuillEditor)
-
 Vue.config.productionTip = false
 
 new Vue({

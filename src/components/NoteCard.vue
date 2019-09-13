@@ -47,6 +47,12 @@ export default {
         border-color white
         color white
         background rgba(#131313, .5)
+    &.row
+      color white
+      &.new
+        border-color white
+      &.exist
+        background-color #454558
   &.grid
     width 155px
     height 206px
@@ -94,6 +100,20 @@ export default {
   &.row
     width 350px
     height 58px
+    display flex
+    justify-content space-between
+    align-items center
+    border-radius 5px
+    box-sizing border-box
+    padding 20px 23px 18px
+    &.new
+      flex-direction row-reverse
+      border 1px solid #000
+      i
+        font-weight bold
+    &.exist
+      box-shadow 0 2px 4px 0 rgba(#000, .16)
+      background-color #f4f4f4
   .material-icons
     font-size 35px
 </style>

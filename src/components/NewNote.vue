@@ -1,30 +1,94 @@
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator'
-
+import { getPreviewImage } from '@/Util'
+import { INewNote } from '../interface/INote'
 @Component
 export default class NewNote extends Vue {
+  hasCustomCover = false
+  customImage: string = ''
+  customImageName: string = ''
+  customImageBase = ''
 
+  title = ''
+  cover = 1
+
+  coverIndexMap = new Map([
+    [1, 'first'],
+    [2, 'second'],
+    [3, 'third'],
+    [4, 'forth'],
+    [5, 'fifth']
+  ])
+
+  customOnClick () {
+    let ref: any = this.$refs['cover-upload']
+    ref.click()
+  }
+
+  async addCustomCover (evt: any) {
+    let file = evt.target.files[0]
+    this.hasCustomCover = true
+    if (file && file.type.startsWith('image/')) {
+      console.log(file)
+      this.customImage = file.name.replace(/\..+$/, '')
+      this.customImageName = 'custom-' + file.name.replace(/\..+$/, '')
+      this.customImageBase = await getPreviewImage(file)
+      let sheet = document.createElement('style')
+      sheet.type = 'text/css'
+      sheet.innerHTML = /* css */`.${this.customImage}: {background-image: url("${this.customImageBase}");}`
+      document.head.appendChild(sheet)
+    }
+  }
+
+  onConfirm () {
+    let noteObj: INewNote = {
+      title: this.title,
+      isCustom: this.cover === 6,
+      cover: this.customImageName,
+      coverImage: this.customImageBase
+    }
+    this.$emit('confirm', noteObj)
+  }
+
+  onClose () {
+    this.$emit('close')
+  }
 }
 </script>
 <template>
-  <div class="modal-bg">
-    <div class="modal">
+  <div class="modal-bg"
+    @click="onClose">
+    <div class="modal"
+      @click.stop>
       <div class="title">新增筆記</div>
       <div class="modal-content">
         <div class="note-name-input">
           <label for="note-name"
             class="note-name">筆記名稱</label>
           <input type="text"
+            v-model="title"
             id="note-name" />
         </div>
         <div class="cover-select-wrap">
           <div class="cover-title">選擇封面</div>
           <div class="cover-select-list">
-            <div class="img-ctn" :tabindex="i" v-for="i in 5" :key="i"></div>
+            <div class="img-ctn"
+              :tabindex="i"
+              v-for="i in 5"
+              @click="cover = i"
+              :autofocus="cover === i"
+              :key="i"></div>
+            <div class="img-ctn"
+              @click="cover = 6"
+              tabindex="6"
+              v-if="hasCustomCover"
+              :style="{ backgroundImage: `url('${customImageBase}')`}"
+              :class="customImage"></div>
           </div>
           <div class="update-wrap">
-            或 <button>匯入圖片</button>
+            或 <button @click="customOnClick">匯入圖片</button>&nbsp;&nbsp;{{customImage}}
             <input type="file"
+              @change="addCustomCover"
               class="cover-upload"
               ref="cover-upload"
               name=""
@@ -32,16 +96,17 @@ export default class NewNote extends Vue {
           </div>
         </div>
         <div class="modal-footer">
-          <button class="confirm">確定</button>
+          <button class="confirm" @click="onConfirm">確定</button>
         </div>
       </div>
     </div>
   </div>
 </template>
 <style lang="stylus" scoped>
-input[type="file"]
+input[type='file']
   display none
 .modal-bg
+  font-family 'Noto Sans TC'
   position fixed
   top 0
   left 0
@@ -57,6 +122,10 @@ input[type="file"]
     box-sizing border-box
     padding 0 6px
     width 488px
+    height 399px
+    button
+      cursor pointer
+      font-family 'Noto Sans TC'
     .title
       padding-left 19px
       margin-top 15px
@@ -89,14 +158,8 @@ input[type="file"]
       display flex
       justify-content space-between
       margin-bottom 17px
+      flex-wrap wrap
       .img-ctn
-        border-radius 5px
-        height 72px
-        width 72px
-        background-color #dedede
-        background-size cover
-        cursor pointer
-        transition .5s
         &:focus
           outline none
           box-shadow 0 0 5px rgba(#000, 0.8)
@@ -110,6 +173,15 @@ input[type="file"]
           background-image url('../assets/cover/forth.jpg')
         &:nth-child(5)
           background-image url('../assets/cover/fifth.jpg')
+    .img-ctn
+      border-radius 5px
+      height 72px
+      width 72px
+      background-color #dedede
+      background-size cover
+      cursor pointer
+      transition 0.5s
+      display inline-block
     .update-wrap
       button
         appearance none
