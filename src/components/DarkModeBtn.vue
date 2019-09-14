@@ -22,6 +22,7 @@ export default class DarkModeBtn extends Vue {
   background linear-gradient(to right, #fff 50%, #000 50%)
   border-radius 50%
   border 1px solid black
+  cursor pointer
   &.active
     background linear-gradient(to right, transparent 50%, #fff 50%)
     border 1px solid white

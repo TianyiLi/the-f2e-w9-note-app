@@ -13,6 +13,11 @@ export default {
     darkMode () {
       return this.state.darkMode
     }
+  },
+  methods: {
+    starOnClick () {
+      this.$emit('star')
+    }
   }
 }
 </script>
@@ -20,14 +25,19 @@ export default {
   <div class="note-card"
     :class="`cover-img-${cover ? cover : 'none'} ${mode} ${isEmpty ? 'new' : 'exist'} ${darkMode ? 'dark-mode' : 'light-mode'}`">
     <div class="title"
-      v-text="title" v-if="!isEmpty"></div>
-    <i class="material-icons add" v-if="isEmpty">
+      v-text="title"
+      v-if="!isEmpty"></div>
+    <i class="material-icons add"
+      v-if="isEmpty">
       add
     </i>
-    <div class="new-title" v-if="isEmpty">新增筆記</div>
+    <div class="new-title"
+      v-if="isEmpty">新增筆記</div>
     <i class="material-icons-round star"
+      @click.stop="starOnClick"
       v-if="!isEmpty && isStar">star</i>
     <i class="material-icons-round star-border"
+      @click.stop="starOnClick"
       v-if="!isEmpty && !isStar">star_border</i>
   </div>
 </template>
@@ -46,7 +56,7 @@ export default {
       &.new
         border-color white
         color white
-        background rgba(#131313, .5)
+        background rgba(#131313, 0.5)
     &.row
       color white
       &.new
@@ -106,13 +116,15 @@ export default {
     border-radius 5px
     box-sizing border-box
     padding 20px 23px 18px
+    background-image unset
     &.new
       flex-direction row-reverse
+      background unset
       border 1px solid #000
       i
         font-weight bold
     &.exist
-      box-shadow 0 2px 4px 0 rgba(#000, .16)
+      box-shadow 0 2px 4px 0 rgba(#000, 0.16)
       background-color #f4f4f4
   .material-icons
     font-size 35px
