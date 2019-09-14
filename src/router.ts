@@ -12,9 +12,10 @@ export default new Router({
       component: Home
     },
     {
-      path: '/note/?:id',
+      path: '/note/:id',
       name: 'note',
-      component: Note
+      component: Note,
+      props: true
     }
   ]
 })

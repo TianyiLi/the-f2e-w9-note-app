@@ -8,6 +8,7 @@ import NoteCard from '@/components/NoteCard.vue'
 import AddNote from '@/components/NewNote.vue'
 
 import { INoteList, INewNote, INote } from '../interface/INote'
+import { upload } from '../Util'
 
 function createStateProxy (instance: any) {
   return new Proxy({}, {
@@ -40,6 +41,9 @@ export default class Home extends Vue {
 
   onlyStarNote = false
 
+  searchField = ''
+  searchToggle = false
+
   @State('darkMode') darkMode!: Boolean
   @State('note') note!: Map<string, INote>
   @Getter('noteList') noteList!: INoteList[]
@@ -47,11 +51,17 @@ export default class Home extends Vue {
 
   @Mutation('modeToggle') modeToggle!: (value: boolean) => void
   @Mutation('noteStarToggle') noteStarToggle!: (id: String) => void
+  @Mutation('addNewNote') addNewNote!: (payload: INewNote) => void
+
+  @Action('importNotes') importNotes!: (value: string) => void
+  @Action('exportNotes') exportNotes!: () => void
 
   get list () {
     let x = this.listTracker
-    let list = [...this.note].map(([key, { coverClass, title, id, star }]) => ({ cover: coverClass, title, id, star }))
-    console.log(list)
+    let list = [...this.note].map(([key, { coverClass, title, id, star, coverImage }]) => ({ cover: coverClass, title, id, star, coverImage }))
+    if (this.searchToggle) {
+      list = list.filter(({ title }) => title.startsWith(this.searchField))
+    }
     return chunk(list.filter(n => this.onlyStarNote ? n.star : true), this.isListMode ? 2 : 4)
   }
 
@@ -60,22 +70,48 @@ export default class Home extends Vue {
     if (id !== '0') {
       this.$router.push('/note/' + id)
     } else {
-      this.addNewNote()
+      this.addNewNoteTrigger()
     }
   }
 
-  addNewNote () {
+  addNewNoteTrigger () {
     this.addNoteIsShow = true
   }
 
   newNoteOnConfirm (arg: INewNote) {
     console.log(arg)
+    this.addNewNote(arg)
+    this.addNoteIsShow = false
+    this.listTracker += 1
   }
 
   starOnClick (id: string) {
     console.log(id)
     this.noteStarToggle(id)
     this.listTracker += 1
+  }
+
+  searchOnClick () {
+    if (this.searchField === '') this.searchToggle = false
+    else this.searchToggle = true
+  }
+
+  uploadNotesJson () {
+    let element = this.$refs['uploadFile'] as HTMLElement
+    element.click()
+  }
+
+  async uploadFileOnChange (evt: any) {
+    let file = evt.target.files[0]
+    let notes = await upload(file)
+    try {
+      // do the validate
+      let notesJson: any = JSON.parse(notes)
+      this.importNotes(notes)
+    } catch (error) {
+      alert(error)
+      return false
+    }
   }
 }
 </script>
@@ -87,12 +123,21 @@ export default class Home extends Vue {
         <div class="user-wrap">
           <img src="../assets/rat.jpg"
             alt=""
+            @click="exportNotes"
             class="user-img">
-          <div class="user-name">Paul</div>
+          <div class="user-name"
+            @click="uploadNotesJson">Paul</div>
+          <input type="file"
+            ref="uploadFile"
+            @change="uploadFileOnChange($event)"
+            v-show="false">
         </div>
         <div class="search-wrap">
-          <input type="text">
-          <i class="material-icons">
+          <input type="text"
+            @keydown.enter="searchOnClick"
+            v-model="searchField">
+          <i class="material-icons"
+            @click="searchOnClick">
             search
           </i>
         </div>
@@ -129,6 +174,7 @@ export default class Home extends Vue {
           :mode="isListMode ? 'row' : 'grid'"></note-card>
       </div>
       <AddNote v-if="addNoteIsShow"
+        @confirm="newNoteOnConfirm"
         @close="addNoteIsShow = false"></AddNote>
     </div>
   </div>
@@ -173,7 +219,9 @@ export default class Home extends Vue {
       display flex
       justify-content center
       align-items center
+      cursor pointer
       .user-img
+        user-select none
         border-radius 50%
         width 40px
         height 40px

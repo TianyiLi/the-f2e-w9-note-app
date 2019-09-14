@@ -5,7 +5,6 @@ export default {
   data () {
     return {
       isInitial: !!this.title,
-      isStar: this.star,
       isEmpty: !this.title
     }
   },
@@ -35,10 +34,10 @@ export default {
       v-if="isEmpty">新增筆記</div>
     <i class="material-icons-round star"
       @click.stop="starOnClick"
-      v-if="!isEmpty && isStar">star</i>
+      v-if="!isEmpty && star">star</i>
     <i class="material-icons-round star-border"
       @click.stop="starOnClick"
-      v-if="!isEmpty && !isStar">star_border</i>
+      v-if="!isEmpty && !star">star_border</i>
   </div>
 </template>
 <style lang="stylus" scoped>

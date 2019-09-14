@@ -8,13 +8,13 @@
 
 不是很想做到使用local儲存，因為cover的關係，預估local storage存取會超過2M
 
-以下是預估會有的feature
+<del>以下是預估會有的feature</del>完成9成
 
-- [ ] 可以使用markdown語法編輯
+- [x] 可以使用markdown語法編輯 (直接於editor當中使用markdown語法即可)
 
-- [ ] 可以自定義cover
+- [x] 可以自定義cover (export再import就無法了QQ)
 
-- [ ] 可以export/import筆記檔案
+- [x] 可以export/import筆記檔案 (點首頁左上圖片可以export, 點Paul可以import， 不過不知道回覆的時候cover會失敗...)
 
 
 [設計稿](https://challenge.thef2e.com/user/1600?schedule=4259#works-4259)

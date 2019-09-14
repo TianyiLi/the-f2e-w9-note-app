@@ -10,7 +10,7 @@ export default class NewNote extends Vue {
   customImageBase = ''
 
   title = ''
-  cover = 1
+  cover: 1 | 2 | 3 | 4 | 5 | 6 = 1
 
   coverIndexMap = new Map([
     [1, 'first'],
@@ -33,19 +33,20 @@ export default class NewNote extends Vue {
       this.customImage = file.name.replace(/\..+$/, '')
       this.customImageName = 'custom-' + file.name.replace(/\..+$/, '')
       this.customImageBase = await getPreviewImage(file)
-      let sheet = document.createElement('style')
-      sheet.type = 'text/css'
-      sheet.innerHTML = /* css */`.${this.customImage}: {background-image: url("${this.customImageBase}");}`
-      document.head.appendChild(sheet)
+      this.cover = 6
     }
   }
 
   onConfirm () {
+    if (this.title === '') {
+      alert('You didn\'t create an title')
+      return false
+    }
     let noteObj: INewNote = {
       title: this.title,
       isCustom: this.cover === 6,
-      cover: this.customImageName,
-      coverImage: this.customImageBase
+      cover: this.cover === 6 ? this.customImageName : this.coverIndexMap.get(this.cover) || 'first',
+      coverImage: this.cover === 6 ? this.customImageBase : ''
     }
     this.$emit('confirm', noteObj)
   }
@@ -96,7 +97,8 @@ export default class NewNote extends Vue {
           </div>
         </div>
         <div class="modal-footer">
-          <button class="confirm" @click="onConfirm">確定</button>
+          <button class="confirm"
+            @click="onConfirm">確定</button>
         </div>
       </div>
     </div>
